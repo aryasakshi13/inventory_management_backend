@@ -62,7 +62,8 @@ export const loginUser = async (req, res) =>{
                     officeId: user.officeId || null 
                 },
             process.env.JWT_SECRET,
-            {expiresIn: process.env.JWT_SECRET_IN ? String(process.env.JWT_EXPIRES_IN).trim() : '1d'}
+        //     {expiresIn: process.env.JWT_SECRET_IN ? String(process.env.JWT_EXPIRES_IN).trim() : '1d'}
+                { expiresIn: process.env.JWT_EXPIRES_IN ? String(process.env.JWT_EXPIRES_IN).trim() : '1d' }
          );
         
          let redirectUrl ='/employee/dashboard';
@@ -83,6 +84,7 @@ export const loginUser = async (req, res) =>{
         return res.status(200).json({
             success: true,
             message: `Successfully authenticated ! welsome back to the dashboard`,
+             token: token,
             user:{
                 id:user.ID,
                 empId:user.empId,

@@ -65,6 +65,8 @@ router.post('/update', verifyToken, authorizeRoles('admin', 'branch admin' ), up
 router.get('/', verifyToken, getInventory);
 
 
+
+
 router.post('/issue', verifyToken, authorizeRoles('admin', 'branch admin'), issueInventoryAsset);
 
 // Add this dedicated route line alongside your other endpoints
