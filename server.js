@@ -27,12 +27,24 @@ if (!fs.existsSync(uploadFolder)) {
     console.log("📁 Generated missing 'uploads' directory automatically.");
 }
 
+// app.use(cors({
+//     origin: 'http://localhost:5175',
+//     credentials: true,               
+//     methods: ['GET', 'POST', 'PUT', 'DELETE','OPTIONS'],
+//     allowedHeaders: ['Content-Type', 'Authorization', 'x-user-role','x-user-office-id' ]
+// }));
+
 app.use(cors({
-    origin: 'http://localhost:5173',
+    // origin: function (origin, callback) {
+    //     // Allows all incoming origins dynamically so cookies match explicit domains
+    //     callback(null, true);
+    // },
+    origin:"http://localhost:5175",
     credentials: true,               
-    methods: ['GET', 'POST', 'PUT', 'DELETE','OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'x-user-role','x-user-office-id' ]
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'x-user-role', 'x-user-office-id']
 }));
+// app.options("*", cors());
 
 // app.options('*', cors());
 
