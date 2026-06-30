@@ -39,7 +39,7 @@ app.use(cors({
     //     // Allows all incoming origins dynamically so cookies match explicit domains
     //     callback(null, true);
     // },
-    origin:"http://localhost:5175",
+    origin:"http://localhost:5175", 
     credentials: true,               
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'x-user-role', 'x-user-office-id']
