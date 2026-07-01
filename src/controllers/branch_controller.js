@@ -59,6 +59,10 @@ export const getOffices = async (req, res) => {
 
 
 export const createOffice = async (req, res) => {
+
+    console.log("--- 📥 CREATE OFFICE REQUEST INCOMING ---");
+    console.log("Payload received inside req.body:", req.body);
+
     const {
         OfficeCode,
         OfficeName,
@@ -67,6 +71,12 @@ export const createOffice = async (req, res) => {
         AdminName,
         AdminMail
     } = req.body;
+
+    console.log("Field Casing Verification Logs:", {
+            OfficeCode: typeof OfficeCode,
+            OfficeName: typeof OfficeName,
+            OfficeAddress: typeof OfficeAddress
+        });
  
     if (!OfficeCode || !OfficeName) {
         return res.status(400).json({
@@ -78,15 +88,16 @@ export const createOffice = async (req, res) => {
     try {
         const [result] = await db.query(
             `INSERT INTO officemaster 
-                (OfficeCode, OfficeName, OfficeAddress, AdminEmpId, AdminName, AdminMail) 
-             VALUES (?, ?, ?, ?, ?, ?)`,
+                (OfficeCode, OfficeName, OfficeAddress, AdminEmpId, AdminName, AdminMail, Password) 
+             VALUES (?, ?, ?, ?, ?, ?, ?)`,
             [
                 OfficeCode.trim(),
                 OfficeName.trim(),
                 OfficeAddress || null,
                 AdminEmpId || null,
                 AdminName || null,
-                AdminMail || null
+                AdminMail || null,
+                "BRANCH_DEFAULT_NOPASS"
             ]
         );
  
