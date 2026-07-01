@@ -1032,8 +1032,8 @@ export const issueInventoryAsset = async (req, res) => {
             
             await db.query(`
                 INSERT INTO stocktransfer 
-                    (BatchId, FromOfficeID, ToOfficeID, Item, Quantity, ModeOfTransfer, CourierName, DocketNumber, Status, Date) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'Pending', NOW())
+                    (BatchId, FromOfficeID, ToOfficeID, Item, Quantity, ModeOfTransfer, EmpId, CourierName, DocketNumber, Status, Date) 
+                VALUES (?, ?, ?, ?, ?,?, ?, ?, ?, 'Pending', NOW())
             `, [uniqueBatchTrackingCode, sourceOffice, ToOfficeID, numericItemId, transferQty, modeOfTransfer || 'By Hand', safeSessionEmpId, req.body.CourierName || req.body.courierName || '', req.body.DocketNumber || req.body.docketNumber || '']);
 
             await db.query('COMMIT');
