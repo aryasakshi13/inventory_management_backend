@@ -912,13 +912,13 @@ export const issueInventoryAsset = async (req, res) => {
 
         // Sum up all incoming items accepted from other branches
         const [inboundStock] = await db.query(
-            'SELECT COALESCE(SUM(Quantity), 0) AS totalInbound FROM stocktransfer WHERE Item = ? AND ToOfficeID = ? AND Status = "Accepted"',
+            "SELECT COALESCE(SUM(Quantity), 0) AS totalInbound FROM stocktransfer WHERE Item = ? AND ToOfficeID = ? AND Status = 'Accepted' ",
             [numericItemId, sourceOffice]
         );
 
         // Sum up all outgoing items currently sent out (Pending or Accepted, but not Rejected)
         const [outboundStock] = await db.query(
-            'SELECT COALESCE(SUM(Quantity), 0) AS totalOutbound FROM stocktransfer WHERE Item = ? AND FromOfficeID = ? AND Status != "Rejected"',
+            "SELECT COALESCE(SUM(Quantity), 0) AS totalOutbound FROM stocktransfer WHERE Item = ? AND FromOfficeID = ? AND Status != 'Rejected' ",
             [numericItemId, sourceOffice]
         );
 
@@ -1024,11 +1024,17 @@ export const issueInventoryAsset = async (req, res) => {
 
             // 📝 Step 2: Push tracking details into stocktransfer log ledger set to 'Pending'
             // 🎯 HIGHLIGHT CHANGE: We save the item's numeric ID instead of a plain string name row field
+
+            //   const safeEmpIdForDb = req.user?.EmpId || req.user?.id || req.user?.ID || "SYSTEM";
+
+            // Safe explicit session tracking id
+            const safeSessionEmpId = req.user?.EmpId || req.user?.id || req.user?.ID || "SYSTEM";
+            
             await db.query(`
                 INSERT INTO stocktransfer 
                     (BatchId, FromOfficeID, ToOfficeID, Item, Quantity, ModeOfTransfer, CourierName, DocketNumber, Status, Date) 
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'Pending', NOW())
-            `, [uniqueBatchTrackingCode, sourceOffice, ToOfficeID, numericItemId, transferQty, modeOfTransfer || 'By Hand', req.body.CourierName || req.body.courierName || '', req.body.DocketNumber || req.body.docketNumber || '']);
+            `, [uniqueBatchTrackingCode, sourceOffice, ToOfficeID, numericItemId, transferQty, modeOfTransfer || 'By Hand', safeSessionEmpId, req.body.CourierName || req.body.courierName || '', req.body.DocketNumber || req.body.docketNumber || '']);
 
             await db.query('COMMIT');
             return res.status(200).json({ 
@@ -1229,6 +1235,7 @@ export const acceptBranchTransfer = async (req, res) => {
 
            
         const transferTrackingCode = `TRANSFER_${batchId}`;
+        // const safeSessionEmpId = req.user?.EmpId || req.user?.id || req.user?.ID || "SYSTEM";
 
         console.log("✈️ INSERTING TO STOCKMASTER:", {
             item: resolvedItemName,
@@ -1248,7 +1255,7 @@ export const acceptBranchTransfer = async (req, res) => {
 
         // 3. LEDGER RECORD UPDATE: Transition the transit log status flag permanently to 'Accepted'
         await db.query(
-            'UPDATE stocktransfer SET Status = "Accepted" WHERE BatchId = ?',
+            "UPDATE stocktransfer SET Status = 'Accepted' WHERE BatchId = ?",
             [batchId]
         );
 
@@ -1423,7 +1430,7 @@ export const rejectBranchTransfer = async (req, res) => {
  
         // 5. Mark transfer as Rejected
         await db.query(
-            'UPDATE stocktransfer SET Status = "Rejected" WHERE BatchId = ?',
+            "UPDATE stocktransfer SET Status = 'Rejected' WHERE BatchId = ?",
             [batchId]
         );
  
